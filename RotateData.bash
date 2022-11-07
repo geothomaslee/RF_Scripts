@@ -39,9 +39,9 @@ q
 +
  
 		if [ -f "$CurRotFile" ]; then
-           		echo "Successfully created rotation file for Station $CurStat in $dir"
+           		echo "Successfully created rotation file for Station $CurStat in $event"
         	else
-           		echo "Failed to create rotation file for Station $CurStat in $dir"
+           		echo "Failed to create rotation file for Station $CurStat in $event"
 		fi 
 
  		if [ -f $CurRotFile ]; then # Only tries to run the current rotation file if it exists 
@@ -50,10 +50,10 @@ q
 
     		if [[ -f "$CurStat.r" && "$CurStat.t" && "$CurStat.z" ]]; 
 		then 
-          		echo "Successfully rotated data for Station $CurStat in $dir"
+          		echo "Successfully rotated data for Station $CurStat in $event"
 	   		rm $CurRotFile # Deletes rotation file - COMMENT IF DEBUGGING
         	else
-           		echo "Failed to rotate data for Station $CurStat in $dir"
+           		echo "Failed to rotate data for Station $CurStat in $event"
    		fi
     	fi
     done 
