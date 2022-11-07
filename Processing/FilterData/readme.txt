@@ -3,7 +3,7 @@ It assumes the file structure of ScriptFolder/Events/seismicdata.sac where Scrip
 
 This can perform several things:
 
-Downsampling, either via number of points or sampling rate
+Downsampling
 Remove mean
 Remove trend
 Bandpass filter
