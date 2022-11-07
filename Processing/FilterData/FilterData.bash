@@ -8,7 +8,7 @@
 # Example: Set Downsample="0" to skip downsampling, Downsample="1" will downsample using the given delta value.
 
 ##DOWNSAMPLING
-Downsample="0" # DEFAULT 0
+Downsample="1" # DEFAULT 0
 Delta="0.05" # Time-step between points, equivalent to 1/sampling frequency 
 
 # NOTE: Iterdecon cannot take more than 4096 points and the error message is quite unhelpful. 
@@ -52,16 +52,18 @@ for event in `ls -ad ${DirPref}*`; do # Loops through event directories
 	    : 
         else
 
-		if [ -f $CurFilterFile]; 
+		if [ -f $CurFilterFile ]; 
 		then
-			cat /dev/null >> $CurFilterFile
+			cat /dev/null > $CurFilterFile
 		else
 			touch $CurFilterFile
 		fi
+
+		echo "r *$CurStat*.[r,t,z]" >> $CurFilterFile
 		
 		if [[ $Downsample == "1" ]];
 		then
-			echo "INTERP NPTS $Delta" >> $CurFilterFile
+			echo "INTERP DELTA $Delta" >> $CurFilterFile
 		fi
 		
 		if [[ $Bandpass == "1" ]]; ## Force enables rmean and rtrend if bandpassing is enabled 
@@ -72,26 +74,29 @@ for event in `ls -ad ${DirPref}*`; do # Loops through event directories
 		
 		if [[ $rmean == "1" ]];
 		then
-			echo "rmean" >> $CurFilter File
+			echo "rmean" >> $CurFilterFile
 		fi
 		
 		if [[ $rtrend == "1" ]];
 		then
-			echo "rtrend" >> $CurFilter File
+			echo "rtrend" >> $CurFilterFile
 		fi
 			
 		if [[ $Bandpass == "1" ]];
 		then
 			echo "bp co $BotCo $TopCo n $Passes" >> $CurFilterFile
 		fi
- 
-		if [ -f "$CurFilterFile" ]; then 
-           		echo "Successfully created filter file for Station $CurStat in $event"
-        	else
-           		echo "Failed to create filter file for Station $CurStat in $event"
-		fi
 
-		if [ -f $CurFilterFile ]; then # Only tries to run the current rotation file if it exists 
+		echo "w $CurStat.r $CurStat.t $CurStat.z" >> $CurFilterFile
+		echo "q" >> $CurFilterFile
+ 
+		#if [ -f "$CurFilterFile" ]; then ##UNCOMMENT IF DEBUGGING
+           		#echo "Successfully created filter file for Station $CurStat in $event"
+        	#else
+           		#echo "Failed to create filter file for Station $CurStat in $event"
+		#fi
+
+		if [ -f $CurFilterFile ]; then # Only tries to run the current rotation file if it exist
 			sac ./$CurFilterFile 
 			rm $CurFilterFile # Removes filter file for organization, KEEP IF DEBUGGING
 		fi 
