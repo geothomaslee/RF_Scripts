@@ -74,12 +74,15 @@ for event in `ls -ad ${DirPref}*`; do # Loops through event directories
     
     if [[ $MakeRFs == "1" ]];
     then
-    	if [[ $LogOutput == "1" ]]; then
+    	if [[ $LogOutput == "1" ]]; 
+	then
 		iterdecon <input.iterdecon >output.iterdecon
 	else
 		iterdecon <input.iterdecon
+	fi
     else
     	echo "Successfully created input files for iterdecon, but did not run iterdecon"
+    fi
     
     cd $StartDir 
 done 
