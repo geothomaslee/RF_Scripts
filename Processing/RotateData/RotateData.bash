@@ -1,7 +1,11 @@
 #!/bin/bash 
 
 # This script assumes 3 component seismic data per station, sorted by event
-# An example file structure is included in the GitHub repository
+## IMPORTANT NOTE ##
+# Sometimes components from the same station and the same event come with a difference of 1 in the number of points when downloaded from IRIS for the same time interval
+# Rotation requires both horizontal components to have the same number of points
+# Change npts to the correct number of points for your given time interval. Default 15001
+npts="15001" # DEFAULT = 15001, the correct number of points for 150 seconds (30 seconds before, 2 minutes after P-wave) at 100Hz sampling rate
 
 StartDir="${PWD}" # Defines the starting directory as location of this script
 DirPref="Event_" # Defines the prefix of the event directories
@@ -29,7 +33,7 @@ for event in `ls -ad ${DirPref}*`; do
         else
 	cat > $CurRotFile <<+ # Has to be indented to left to write file properly
 r *$CurStat*.HH[1,2,E,N]*.SAC
-interp NPTS 15001
+interp npts $npts
 rot to gcp
 w $CurStat.r $CurStat.t
 r *$CurStat*.HHZ*.SAC
