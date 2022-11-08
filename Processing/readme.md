@@ -10,10 +10,11 @@ If you're running all of these, they should be run in the order that they're lis
 3. FilterData - automates various filtering processes. NOTE: assumes data has already been rotated
 
 ## MoveSmallTraces
-This script removes empty traces, 2 different detection methods.
+This script removes empty traces using 2 different detection methods.
 
-Method 1 checks the size of the file and sets it aside if it's below a certain threshold, assuming that metadata will only take up a small amount of disk space.
-Method 2 uses the depmax (maximum amplitude) header in SAC and if it's undefined, assumes the file is empty and sets it aside.
+1. Checks the size of the file and sets it aside if it's below a certain threshold, assuming that metadata will only take up a small amount of disk space.
+   - Default threshold is 10kb which works well in my testing, but can be adjusted if necessary
+3. Checks the depmax (maximum amplitude) header in SAC and if it's undefined, assumes the file is empty and sets it aside.
 
 ## RotateData
 This script can automatically rotate large amounts of 3 component seismic data using SAC's rotate command.
