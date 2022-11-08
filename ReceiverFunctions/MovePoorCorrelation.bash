@@ -1,20 +1,19 @@
 #!/bin/bash
 
+## CORRELATION THRESHOLD ##
+MinCorr="70" # Threshold for correlation below which RFs will be set aside
+
 StartDir="${PWD}" # Reference directory is location where script is run
 StatList="$StartDir/StationList.txt" # Defines the station list
-ProbDir="Low_Correlation_RFs"
+ProbDir="Low_Correlation_RFs" # Name of the directory where low correlation files will be set
 DirPref="Event_" # Prefix of event files
 IterOut="output.iterdecon" # Names of Iterdecon output file
 TempFile="$StartDir/MovePoorCorrelationTempFile.txt"
-MinCorr="70" # Minimum correlation for file to bee kept
 
-# Color table, most aren't even used but they're useful for debugging
+# Color table, useful for debugging
 LIGHT_GREEN='\033[1;32m'
 LIGHT_RED='\033[1;31m'
-BLUE='\033[1;34m'
-YELLOW='\033[1;33m'
 NC='\033[0m' # Resets to no color
-# Make sure to use -e flag in echo to allow the backslashes to be read correctly
 
 if [ -e $TempFile ]; then
     cat /dev/null > $TempFile
@@ -55,41 +54,30 @@ for event  in `ls -ad ${DirPref}*`; do
     for i in $(seq 1 $RFCount); do
 	RF=$(awk 'NR=='$i'{ print $5}' $IterOut) # Reads RF from output file
 	Corr=$(awk 'NR=='$i'{ print $3}' $IterOut) # Reads correlation value from output file
-       
 	
-	if [ -e $RF ]; then # Only attempts the following code if the files haven't been moved already
-	    # This method gets around double counting of files where BOTH components are bad
+	if [ -e $RF ]; # Only attempts the following code if the files haven't been moved already
+	then 
+		if (( $(bc <<<"$Corr < $MinCorr") )); 
+		then
+		   extension="${RF##*.}" # Finds file extension for current file
+		   RFBase=$(basename -s $extension $RF) # Removes file extension
 
-	#echo "Correlation for $RF is $Corr" # DEBUG LINE
-	if (( $(bc <<<"$Corr < $MinCorr") )); then
-	    #echo "Correlation too low for $RF" # DEBUG LINE
+		   ProbFileList=$(find . -type f -name "$RFBase???")
 
-	   extension="${RF##*.}" # Finds file extension for current file
-	   RFBase=$(basename -s $extension $RF) # Removes file extension
+		   mv $ProbFileList $ProbDir # Moves both itr and itt files
 
-	   ProbFileList=$(find . -type f -name "$RFBase???")
+		   BadTicker=$(($BadTicker+2))
 
-	   mv $ProbFileList $ProbDir # Moves both itr and itt files
-
-	   BadTicker=$(($BadTicker+2))
-	   	    
-	fi
-	 
-
+		fi
 	else # No need to do anything in the case of a good station
 	    :
 	fi
-	
     done
-
-
     echo "Finished with $event"
-
     cd $StartDir
 done
 
 rm $TempFile
-
 echo ""
 
 NumRFs=$(( $RFCountTotal / 2))
