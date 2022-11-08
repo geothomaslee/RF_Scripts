@@ -50,35 +50,35 @@ for event in `ls -ad ${DirPref}*`; do # Loops through event directories
 	if [ -z "$doRotatedFilesExist" ]; then 
 	    :
         else
-		echo "$CurStat.r" >> $outfile # Defines radial input file
-		echo "$CurStat.z" >> $outfile # Defines vertical input file
-		echo "$dir.$CurStat.itr" >> $outfile # Defines the radial output file
-		echo $iterations >> $outfile
-		echo $phaseshift >> $outfile
-		echo $delta >> $outfile
-		echo $gaussian >> $outfile
-		echo $wvforms >> $outfile
-		echo "0" >> $outfile
-		echo "$CurStat.t" >> $outfile # Defines radial input file
-		echo "$CurStat.z" >> $outfile # Defines vertical  input file
-		echo "$dir.$CurStat.itt" >> $outfile # Defines the tangential output file
-		echo $iterations >> $outfile
-		echo $phaseshift >> $outfile
-		echo $delta >> $outfile
-		echo $gaussian >> $outfile
-		echo $wvforms >> $outfile
-		echo "0" >> $outfile
+		echo "$CurStat.r" >> $infile # Defines radial input file
+		echo "$CurStat.z" >> $infile # Defines vertical input file
+		echo "$event.$CurStat.itr" >> $infile # Defines the radial output file
+		echo $iterations >> $infile
+		echo $phaseshift >> $infile
+		echo $delta >> $infile
+		echo $gaussian >> $infile
+		echo $wvforms >> $infile
+		echo "0" >> $infile
+		echo "$CurStat.t" >> $infile # Defines radial input file
+		echo "$CurStat.z" >> $infile # Defines vertical  input file
+		echo "$event.$CurStat.itt" >> $infile # Defines the tangential output file
+		echo $iterations >> $infile
+		echo $phaseshift >> $infile
+		echo $delta >> $infile
+		echo $gaussian >> $infile
+		echo $wvforms >> $infile
+		echo "0" >> $infile
 
         fi
     done 
     
     if [[ $MakeRFs == "1" ]];
     then
-    	if [[ $LogOutput == "1" ]]; 
+    	if [[ $LogOutput == "1" ]];
 	then
-		iterdecon <input.iterdecon >output.iterdecon
+		/usr/local/Owens_Software/bin/iterdecon_batch <input.iterdecon >output.iterdecon
 	else
-		iterdecon <input.iterdecon
+		/usr/local/Owens_Software/bin/iterdecon_batch  <input.iterdecon
 	fi
     else
     	echo "Successfully created input files for iterdecon, but did not run iterdecon"
