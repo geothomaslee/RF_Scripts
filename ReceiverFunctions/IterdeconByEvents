@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 ## IMPORTANT BEFORE USE ##
-# This script assumes you have an alias set up for iterdecon in your .bashrc file. If this is not the case, edit lines __ and __ to replace iterdecon with the location of the executable
+# This script assumes you have an alias set up for iterdecon in your .bashrc file. If this is not the case, edit lines 78 and 80 to replace iterdecon with the location of the executable
 # Iterdecon breaks if you feed it more than 4096 points and the error message does not communicate the actual problem. Make sure your files have <4096 points. Use FilterData to quickly downsample if you need that.
 
 ## ITERDECON PARAMETERS ##
