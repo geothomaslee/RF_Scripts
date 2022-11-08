@@ -1,33 +1,36 @@
 #!/bin/bash
 
-DirPref="Event_"
+# This script finds iterdecon files within event directories and sorts them by station.
+# By default the stations folder is located within the same directory that contains the event folders
+
+DirPref="Event_" # Prefix for event directories
 StartDir=${PWD}
-StatList="$StartDir/StationList.txt"
-outfile="$StartDir/ProblemStationsList.txt"
 WorkFile="$StartDir/SortByStationTemp.txt"
+
+
+## STATION DIRECTORY ##
+StatDir="$StartDir/Stations" # Change this to adjust the stations directory. DEFAULT $StartDir/Stations
+
+StatList="$StartDir/StationList.txt"
+#StatList requires a list of the 3 (or 2 or 4) digit station code for each station within the desired network
+#Example: Network ZR from 2015-2018 has stations W1A, W1B, etc.
+#This code assumes all stations are within the same network, will require some tweaking otherwise
 
 # Color table, most aren't even used but they're useful for debugging
 LIGHT_GREEN='\033[1;32m'
 LIGHT_RED='\033[1;31m'
-BLUE='\033[1;34m'
-YELLOW='\033[1;33m'
 NC='\033[0m' # Resets to no color
-# Make sure to use -e flag in echo to allow the backslashes to be read correctly
-
-echo -e "${LIGHT_GREEN}Beginning at $(date +'%B %d, %Y at %T')${NC}"
-
-SECONDS=0 # Handy little thing to track calculation time of scripts
-duration="SECONDS" 
 
 echo # Blank line for ease of reading
 
 if [ -e $WorkFile ]; # Temp file solution was 90% faster than any other alternatives and more consistent
     then
-       cat /dev/null > $WorkFile # Clears output file if it already exists
-       echo -e "${LIGHT_GREEN}Temp file cleared${NC}" # Uncomment if debugging
+       cat /dev/null > $WorkFile # Clears temp file if it already exists
+       echo -e "${LIGHT_GREEN}Temp file cleared${NC}" 
     else
        touch $WorkFile
-       if [ -f $WorkFile ]; then # Simple check to see if it was created successfully
+       if [ -f $WorkFile ]; 
+       then 
 	   echo -e "${LIGHT_GREEN}Temp file successfilly created in $StartDir{NC}"
        fi
 fi
@@ -36,7 +39,7 @@ if [ -d "$StartDir/Stations" ]; # Makes a folder for the stations if it doesn't 
     then
        :
     else
-       mkdir "$StartDir/Stations"
+       mkdir $StatDir
 fi
 
 echo # Blank line for ease of reading
@@ -46,26 +49,26 @@ echo "$NumStations Stations Found In List"
 
 for i in $(seq 1 $NumStations); do
     CurStat=$(awk 'NR=='$i'{ print; exit }' $StatList)
-    if [ -d "$StartDir/Stations/$CurStat" ]; 
+    if [ -d "$StatDir/$CurStat" ]; 
 	then
 	   :
 	else
-	   mkdir "$StartDir/Stations/$CurStat"
+	   mkdir "$StatDir/$CurStat"
     fi
 done
 
 
-
-for dir in `ls -ad $DirPref*`; do # Enters event directory
-    cd $dir
-    echo -e "${NC}Working on $dir"
+for event in `ls -ad $DirPref*`; do # Enters event directory
+    cd $event
+    echo -e "${NC}Working on $event"
 
     for i in $(seq 1 $NumStations); do # Works on current station
 	CurStat=$(awk 'NR=='$i'{ print; exit }' $StatList)
 
         doRFFilesExist=$(find . -mindepth 1 -maxdepth 1 -type f -name "*$CurStat*.it[r,t]")
 
-	if [ -z "$doRFFilesExist" ]; then # Speed improvement - doesn't count SAC files if the number of files is 0"
+	if [ -z "$doRFFilesExist" ]; 
+	then
 	    :
 	else
 	    cat /dev/null > $WorkFile # Clears temp file
@@ -75,38 +78,28 @@ for dir in `ls -ad $DirPref*`; do # Enters event directory
 
 		for i in $(seq 1 $RFFileCount); do
 		   CurrentRFFile=$(awk 'NR=='$i'{ print; exit }' $WorkFile) # Reads the i'th line in the temp file
-		   cp "$StartDir/$dir/$CurrentRFFile" "$StartDir/Stations/$CurStat"
+		   cp "$StatDir/$CurrentRFFile" "$StatDir/$CurStat"
 		done
 
 		cat /dev/null > $WorkFile # Clears temp file
 
-		cd "$StartDir/Stations/$CurStat" # Ok to be honest this check may be excessive but it's helpful for debugging
+		cd "$StatDir/$CurStat" 
 		doRFFilesExistMoveCheck=$(find . -type f -name "*$dir**$CurStat*.it[r,t]")
-		cd "$StartDir/$dir"
+		cd "$StatDir/$dir"
 
 	        echo "$doRFFilesExistMoveCheck" >> $WorkFile # Writes list of moved	    
 		RFFileCountMoveCheck=$(wc -l < $WorkFile) # Separate variable for the move check to make sure it worked
 
-		#echo -e "${YELLOW}$SACFileCountMoveCheck files removed from main folders${NC}" ## DEBUG LINE ##
-		
-		#echo -e "${YELLOW}$RFFileCount $RFFileCountMoveCheck${NC}" #Uncomment if debugging
-
 		if [[ "$RFFileCount" == "$RFFileCountMoveCheck" ]];
 		    then
-		       echo -e "${LIGHT_GREEN}Successfully copied Iterdecon files for $CurStat in $dir${NC}"
+		       echo -e "${LIGHT_GREEN}Successfully copied Iterdecon files for $CurStat in $event${NC}"
 		    else
-		       echo -e "${LIGHT_RED}Failed to copy Iterdecon files for $CurStat in $dir${NC}"
+		       echo -e "${LIGHT_RED}Failed to copy Iterdecon files for $CurStat in $event${NC}"
 		fi
-
-	    fi
+	fi
 
     done
     cd $StartDir
-
 done
 
 rm $WorkFile # Deletes the temp file at the end, comment this line if debugging
-
-echo # Blank line for ease of reading
-echo -e "${LIGHT_GREEN}Operation complete  at $(date +'%B %d, %Y at %T')"
-echo -e "$(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed ${NC}"
