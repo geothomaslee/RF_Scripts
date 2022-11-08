@@ -78,7 +78,7 @@ for event in `ls -ad $DirPref*`; do # Enters event directory
 
 		for i in $(seq 1 $RFFileCount); do
 		   CurrentRFFile=$(awk 'NR=='$i'{ print; exit }' $WorkFile) # Reads the i'th line in the temp file
-		   cp "$StatDir/$CurrentRFFile" "$StatDir/$CurStat"
+		   cp "$StartDir/$event/$CurrentRFFile" "$StatDir/$CurStat"
 		done
 
 		cat /dev/null > $WorkFile # Clears temp file
