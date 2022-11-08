@@ -1,0 +1,85 @@
+#!/bin/bash 
+
+## IMPORTANT BEFORE USE ##
+# This script assumes you have an alias set up for iterdecon in your .bashrc file. If this is not the case, edit lines __ and __ to replace iterdecon with the location of the executable
+# Iterdecon breaks if you feed it more than 4096 points and the error message does not communicate the actual problem. Make sure your files have <4096 points. Use FilterData to quickly downsample if you need that.
+
+## ITERDECON PARAMETERS ##
+infile="input.iterdecon" # Defines the input file
+iterations="400"
+phaseshift="30" # Time difference between P-arrival and start of file
+delta=".001"
+gaussian="2.5"
+wvforms="1"
+
+LogOutput="1" # DEFAULT 1
+outfile="output.iterdecon" 
+# Set LogOutput to 0 if you want iterdecon to send its output into the terminal rather than a separate output file
+# outfile defines the name of the output file
+
+MakeRFs="1" # DEFAULT 1
+# Set MakeRFs to 0 if you want it to make the iterdecon input files without actually running iterdecon, mostly for debugging purposes
+
+StartDir="${PWD}" # Defines the starting directory as location of this script
+DirPref="Event_" # Defines the prefix of the event directories
+StatList="StationList.txt" # Defines the station list
+
+#StatList requires a list of the 3 (or 2 or 4) digit station code for each station within the desired network
+#Example: Network ZR from 2015-2018 has stations W1A, W1B, W2A, W2B, etc.
+#This code assumes all stations are within the same network, will require some tweaking otherwise
+
+
+
+NumStations=$(wc -l < $StatList) # Defines number of stations
+echo "$NumStations Stations Found In Station List"
+
+for event in `ls -ad ${DirPref}*`; do # Loops through event directories 
+    cd $event 
+    echo "Working on $event"
+    
+    if [ -f $infile ]; then
+	cat /dev/null > $infile
+    else
+	touch $infile # Creates input file
+    fi
+
+    for i in $(seq 1 $NumStations); do
+	CurStat=$(awk 'NR=='$i'{ print; exit }' ../$StatList) # Reads the i'th line of the station list
+	doRotatedFilesExist=$(find . -maxdepth 1 -mindepth 1 -type f -name "$CurStat.r")
+
+	if [ -z "$doRotatedFilesExist" ]; then 
+	    :
+        else
+		echo "$CurStat.r" >> $outfile # Defines radial input file
+		echo "$CurStat.z" >> $outfile # Defines vertical input file
+		echo "$dir.$CurStat.itr" >> $outfile # Defines the radial output file
+		echo $iterations >> $outfile
+		echo $phaseshift >> $outfile
+		echo $delta >> $outfile
+		echo $gaussian >> $outfile
+		echo $wvforms >> $outfile
+		echo "0" >> $outfile
+		echo "$CurStat.t" >> $outfile # Defines radial input file
+		echo "$CurStat.z" >> $outfile # Defines vertical  input file
+		echo "$dir.$CurStat.itt" >> $outfile # Defines the tangential output file
+		echo $iterations >> $outfile
+		echo $phaseshift >> $outfile
+		echo $delta >> $outfile
+		echo $gaussian >> $outfile
+		echo $wvforms >> $outfile
+		echo "0" >> $outfile
+
+        fi
+    done 
+    
+    if [[ $MakeRFs == "1" ]];
+    then
+    	if [[ $LogOutput == "1" ]]; then
+		iterdecon <input.iterdecon >output.iterdecon
+	else
+		iterdecon <input.iterdecon
+    else
+    	echo "Successfully created input files for iterdecon, but did not run iterdecon"
+    
+    cd $StartDir 
+done 
