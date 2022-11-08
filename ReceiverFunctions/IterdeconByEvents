@@ -76,9 +76,9 @@ for event in `ls -ad ${DirPref}*`; do # Loops through event directories
     then
     	if [[ $LogOutput == "1" ]];
 	then
-		/usr/local/Owens_Software/bin/iterdecon_batch <input.iterdecon >output.iterdecon
+		iterdecon <input.iterdecon >output.iterdecon
 	else
-		/usr/local/Owens_Software/bin/iterdecon_batch  <input.iterdecon
+		iterdecon  <input.iterdecon
 	fi
     else
     	echo "Successfully created input files for iterdecon, but did not run iterdecon"
