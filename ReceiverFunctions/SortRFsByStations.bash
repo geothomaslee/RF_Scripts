@@ -31,7 +31,7 @@ if [ -e $WorkFile ]; # Temp file solution was 90% faster than any other alternat
        touch $WorkFile
        if [ -f $WorkFile ]; 
        then 
-	   echo -e "${LIGHT_GREEN}Temp file successfilly created in $StartDir{NC}"
+	   echo -e "${LIGHT_GREEN}Temp file successfilly created in $StartDir${NC}"
        fi
 fi
 
@@ -83,19 +83,6 @@ for event in `ls -ad $DirPref*`; do # Enters event directory
 
 		cat /dev/null > $WorkFile # Clears temp file
 
-		cd "$StatDir/$CurStat" 
-		doRFFilesExistMoveCheck=$(find . -type f -name "*$dir**$CurStat*.it[r,t]")
-		cd "$StatDir/$dir"
-
-	        echo "$doRFFilesExistMoveCheck" >> $WorkFile # Writes list of moved	    
-		RFFileCountMoveCheck=$(wc -l < $WorkFile) # Separate variable for the move check to make sure it worked
-
-		if [[ "$RFFileCount" == "$RFFileCountMoveCheck" ]];
-		    then
-		       echo -e "${LIGHT_GREEN}Successfully copied Iterdecon files for $CurStat in $event${NC}"
-		    else
-		       echo -e "${LIGHT_RED}Failed to copy Iterdecon files for $CurStat in $event${NC}"
-		fi
 	fi
 
     done
