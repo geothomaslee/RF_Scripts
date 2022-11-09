@@ -12,6 +12,9 @@ delta=".001"
 gaussian="2.5"
 wvforms="1"
 
+iterdecon="/usr/local/Owens_Software/bin/iterdecon_batch" ## Iterdecon executable location
+
+
 LogOutput="1" # DEFAULT 1
 outfile="output.iterdecon" 
 # Set LogOutput to 0 if you want iterdecon to send its output into the terminal rather than a separate output file
@@ -76,9 +79,9 @@ for event in `ls -ad ${DirPref}*`; do # Loops through event directories
     then
     	if [[ $LogOutput == "1" ]];
 	then
-		iterdecon <input.iterdecon >output.iterdecon
+		$iterdecon <input.iterdecon >output.iterdecon
 	else
-		iterdecon  <input.iterdecon
+		$iterdecon  <input.iterdecon
 	fi
     else
     	echo "Successfully created input files for iterdecon, but did not run iterdecon"
