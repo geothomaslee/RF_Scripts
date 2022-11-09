@@ -28,6 +28,9 @@ It is assumed that the data is grouped by event and the script is run in the dir
 * EVLA - event latitude
 * EVLO - event longitude
 
+##### Common Errors
+* Bad number of files read in upon execution of first rotate file: happens when you forget to provide a station list
+
 ## FilterData
 ### IMPORTANT NOTE: FilterData assumes that the data has already been rotated. It also assumes the naming convention for files made from the RotateData script.
 I may update this in the future to be more flexible, but I don't have any use for that currently because I'm working on receiver functions.
