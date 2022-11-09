@@ -24,15 +24,15 @@ fi
    for trace in $traces ; do 
 		size1=`saclst depmax f $trace | awk '{print $2}'`
 		size2=`du $trace | awk '{print $1}'`
-		if [ $size2 -lt $EmptyThreshhold ]; then
+		if [[ $size2 -lt $EmptyThreshhold ]]; then
 			echo -e "${RED}Small trace found${NC}"
 			mv $trace $ProbDir
 		fi
-		if [ "$size1" == "-nan" ]; then
+		if [[ "$size1" == "-nan" ]]; then
 			echo -e "${RED}Empty SAC file found${NC}"
 			mv $trace $ProbDir
 		fi
-                if [ "$size1" == "nan" ]; then
+                if [[ "$size1" == "nan" ]]; then
                         echo -e "${RED}Empty SAC file found${NC}"
                         mv $trace $ProbDir
                 fi
