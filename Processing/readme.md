@@ -6,15 +6,23 @@ If you're running all of these, they should be run in the order that they're lis
 
 ### SUMMARY 
 1. MoveSmallTraces - sets aside SAC files that do not contain actual seismic data
-2. RotateData - can rotate E/W N/S components into radial/tangential components
-3. FilterData - automates various filtering processes. NOTE: assumes data has already been rotated
+2. FindSegmented - looks for stations that have components segmented into multiple files, also looks for missing components
+3. RotateData - can rotate E/W N/S components into radial/tangential components
+4. FilterData - automates various filtering processes. NOTE: assumes data has already been rotated
 
 ## MoveSmallTraces
 This script removes empty traces using 2 different detection methods.
 
 1. Checks the size of the file and sets it aside if it's below a certain threshold, assuming that metadata will only take up a small amount of disk space.
    - Default threshold is 10kb which works well in my testing, but can be adjusted if necessary
-3. Checks the depmax (maximum amplitude) header in SAC and if it's undefined, assumes the file is empty and sets it aside.
+2. Checks the depmax (maximum amplitude) header in SAC and if it's undefined, assumes the file is empty and sets it aside.
+
+## FindSegmented
+This script looks for components that have been segmented into multiple files. It may be possible to simply splice the files together, but these often contain time gaps that make the data unusable. It also looks for stations with missing components and sets aside the files. Makes 3 directories.
+1. Segmented_Components - for segmented components
+2. Missing_Components - for missing components
+3. Missing_And_Excess_Components - for situations where previous 2 methods didn't detect issues because there are 3 files, but one or more are missing and one or more have repeats.  
+   - Requires channel names to be defined according to your data at the beginning of the script.
 
 ## RotateData
 This script can automatically rotate large amounts of 3 component seismic data using SAC's rotate command.
