@@ -13,29 +13,45 @@ StartDir=`pwd`
 EmptyThreshold="10" # Threshold for assuming that a file contains only metadata, in kilobytes
 
 for evt in `ls -ad $DirPref*`; do 
-	cd $evt
-if [ -d $ProbDir ] ; then
-	:
-else
-	mkdir $ProbDir
-fi
+	echo "Working on event $evt"
+	if [ -z "$(ls -A ./$evt)" ]; # Add exception for empty event directories
+	then
+		echo "Empty event directory found: $evt"
+		if [ -d "Empty_Events" ]; 
+		then
+			mv $evt ./Empty_Events
+			echo "Successfully moved empty event $evt"
+		else
+			echo "Making empty event directory"
+			mkdir ./Empty_Events 
+			mv $evt ./Empty_Events
+			echo "Successfully moved empty event $evt"
+		fi
+	else
+		cd $evt
+		if [ -d $ProbDir ] ; then
+			:
+		else
+			mkdir $ProbDir
+		fi
 
-   traces=`ls *.SAC`
-   for trace in $traces ; do 
-		size1=`saclst depmax f $trace | awk '{print $2}'`
-		size2=`du $trace | awk '{print $1}'`
-		if [[ $size2 -lt $EmptyThreshhold ]]; then
-			echo -e "${RED}Small trace found${NC}"
-			mv $trace $ProbDir
-		fi
-		if [[ "$size1" == "-nan" ]]; then
-			echo -e "${RED}Empty SAC file found${NC}"
-			mv $trace $ProbDir
-		fi
-                if [[ "$size1" == "nan" ]]; then
-                        echo -e "${RED}Empty SAC file found${NC}"
-                        mv $trace $ProbDir
-                fi
-	done
+		traces=`ls *.SAC`
+		for trace in $traces ; do 
+			size1=`saclst depmax f $trace | awk '{print $2}'`
+			size2=`du $trace | awk '{print $1}'`
+			if [[ $size2 -lt $EmptyThreshhold ]]; then
+				echo -e "${RED}Small trace found${NC}"
+				mv $trace $ProbDir
+			fi
+			if [[ "$size1" == "-nan" ]]; then
+				echo -e "${RED}Empty SAC file found${NC}"
+				mv $trace $ProbDir
+			fi
+                	if [[ "$size1" == "nan" ]]; then
+                        	echo -e "${RED}Empty SAC file found${NC}"
+                        	mv $trace $ProbDir
+                	fi
+		done
+	fi
 	cd $StartDir
 done
