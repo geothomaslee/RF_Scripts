@@ -103,3 +103,6 @@ for event in `ls -ad ${DirPref}*`; do
 done
 
 rm FindSegmentedTempFile.txt
+
+TempFiles=$(find -mindepth 1 -maxdepth 3 -type f -name "FindSegmentedTempFile.txt")
+rm $TempFiles
