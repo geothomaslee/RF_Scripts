@@ -4,9 +4,7 @@
 Created on Mon Mar 13 21:23:01 2023
 
 @author: tlee
-"""
 
-"""
 This includes three different methods of plotting by Backazimuth. 
 
 Plot_Station_By_BAZ plots by the value for backazimuth and is thus more 
@@ -25,10 +23,11 @@ from obspy import read
 import matplotlib.pyplot as plt
 import os
 
-Real_BAZ = True # Plots the more physically representative BAZ plot
-False_BAZ = True # Plots the more conceptual BAZ plot
-Binned_BAZ = True # Plots the binned BAZ plot
-Save_Figs = False # Saves the figures made by this script.
+Real_BAZ = True # Plots the more physically representative BAZ plot if true
+False_BAZ = False # Plots the more conceptual BAZ plot if true
+Binned_BAZ = False # Plots the binned BAZ plot if true
+Show_Figs = True # Displays the figures on screen if true
+Save_Figs = False # Saves the figures made by this script if true
 
 """
 This script expects that traces (RFs) all share a common prefix that allows
@@ -38,14 +37,17 @@ named after their corresponding station. An example expected data structure:
 /home/user/project_RFs/Stations/Station/Event_*
 
 where the Stations directory contains directories named after each station and
-Event_ corresponds to the common prefix for all directories you wish to plot.\
-Station_List is a list of the names of station directories within the
-Stations folder, which could theoretically be globbed rather than manually
-feeding a list in and naming directories after the list.
+Event_ corresponds to the common prefix for all directories you wish to plot.
+station_list is a list of the stations you want to plot.
+
+If you want to assume all directories within the Stations folder are stations
+that you want to plot, then ruse the following for station_list
+
+station_list = next(os.walk(f'{station_dir)}/.)[1]
 """
 station_dir = '/home/tlee/Maule_RFs/Stations'
 trace_pref = 'Event_*'
-station_list = ['W1A']
+station_list = next(os.walk(f'{station_dir}/.'))[1]    
 
 scale_factor = 12 # Default = 12
 starttime = -5 # Time in seconds relative to first peak
@@ -53,9 +55,19 @@ endtime= 25 # Time in seconds relative to first peak
 phase_shift = 30 # Time of first peak
 bin_size = 5 # Bin size for Binned_BAZ
 
+current_dir = os.getcwd()
 starttime = starttime + phase_shift
 endtime = endtime + phase_shift
-current_dir = os.getcwd()
+
+remove_list = []
+for station in station_list: # This section removes empty directories so they don't break the script later
+    current_station_dir = f'{station_dir}/{station}'
+    if len(os.listdir(current_station_dir)) == 0:
+        remove_list.append(station)
+
+for station in remove_list:
+    station_list.remove(station)
+        
 
 def Plot_Station_By_BAZ(stream):
     fig = plt.figure(figsize=[8, 4],
@@ -101,8 +113,7 @@ def Plot_Station_By_False_BAZ(stream):
     
     return fig
 
-def Plot_Stations_By_Binned_BAZ(stream):
-    
+def Plot_Stations_By_Binned_BAZ(stream):   
     stack_stream = stream.copy()
     stack_stream.clear()
     
@@ -151,39 +162,46 @@ def Plot_Stations_By_Binned_BAZ(stream):
     return fig
         
 def Make_Fig_Dir(fig_type):
-    fig_dir = f'{current_dir}/{fig_type}'
+    current_dir = os.getcwd()
+    fig_dir = f'{current_dir}/Backazimuth_Figures'
+    fig_type_dir = f'{current_dir}/Backazimuth_Figures/{fig_type}'
     if os.path.isdir(fig_dir) == False:
         os.mkdir(fig_dir)
+    if os.path.isdir(fig_type_dir) == False:
+        os.mkdir(fig_type_dir)
 
 if Real_BAZ == True:
     for station in station_list:
         station_RFs = f'{station_dir}/{station}/{trace_pref}'
         stream = read(station_RFs)
         figure = Plot_Station_By_BAZ(stream)
-        figure.suptitle(f'RFs Plotted By Backazimuth for Station {station}', 
+        figure.suptitle(f'RFs Plotted By Backazimuth for Station {station}\n{len(stream)} RFs found', 
                         fontsize="12")
-        figure.show()
+        
+        if Show_Figs == True:
+            figure.show()
 
         if Save_Figs == True:
-            fig_type='Real_BAZ'
+            fig_type = 'Real_BAZ'
             Make_Fig_Dir(fig_type)
-            fname = f'{current_dir}/{fig_type}/{station}.{fig_type}.png'
+            fname = f'{current_dir}/Backazimuth_Figures/{fig_type}/{station}.{fig_type}.png'
             figure.savefig(fname=fname, dpi='figure')
         
-if False_BAZ == True:
-    
+if False_BAZ == True:  
     for station in station_list:
         station_RFs = f'/home/tlee/Maule_RFs/Stations/{station}/Event_*'
         stream = read(station_RFs)
         figure = Plot_Station_By_False_BAZ(stream)
-        figure.suptitle(f'RFs from Station {station} Plotted By Conceptual Backazimuth',
+        figure.suptitle(f'RFs from Station {station} Plotted By Conceptual Backazimuth\n{len(stream)} RFs found',
                         fontsize="12")
-        figure.show()
+        
+        if Show_Figs == True:
+            figure.show()
         
         if Save_Figs == True:
-            fig_type='False_BAZ'
+            fig_type = 'False_BAZ'
             Make_Fig_Dir(fig_type)
-            fname = f'{current_dir}/{fig_type}/{station}.{fig_type}.png'
+            fname = f'{current_dir}/Backazimuth_Figures/{fig_type}/{station}.{fig_type}.png'
             figure.savefig(fname=fname, dpi='figure')
             
 if Binned_BAZ == True:
@@ -191,14 +209,16 @@ if Binned_BAZ == True:
         station_RFs = f'/home/tlee/Maule_RFs/Stations/{station}/Event_*'
         stream = read(station_RFs)
         figure = Plot_Stations_By_Binned_BAZ(stream)
-        figure.suptitle(f'RFs Plotted By Binned Backazimuth for Station {station}', 
+        figure.suptitle(f'RFs Plotted By Binned Backazimuth for Station {station}\n{len(stream)} RFs found in {bin_size} degree bins', 
                         fontsize="12")
-        figure.show()
-
+        
+        if Show_Figs == True:
+            figure.show()
+            
         if Save_Figs == True:
-            fig_type='Binned_BAZ'
+            fig_type = 'Binned_BAZ'
             Make_Fig_Dir(fig_type)
-            fname = f'{current_dir}/{fig_type}/{station}.{fig_type}.png'
+            fname = f'{current_dir}/Backazimuth_Figures/{fig_type}/{station}.{fig_type}.png'
             figure.savefig(fname=fname, dpi='figure')
 
 
