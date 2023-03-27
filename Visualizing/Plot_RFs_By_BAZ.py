@@ -35,14 +35,21 @@ This script expects that traces (RFs) all share a common prefix that allows
 them to be globbed via Prefix_* and that traces are organized into directories
 named after their corresponding station. An example expected data structure:
 
-/home/user/project_RFs/Stations/Station/Event_*.itr
+home/user/project_RFs/Stations/Station/Event_*
 
 where the Stations directory contains directories named after each station and
 Event_ corresponds to the common prefix for all directories you wish to plot.
 station_list is a list of the stations you want to plot.
 
+NOTE: If your station directory contains both radial and tangential receiver functions, 
+make sure to specify the file extension for whichever type you wish to plot,
+as by default both will be pulled if they share the same file name prefix.
+
+Example trace_pref: "Event_*.itr" where .itr is the file extension for radial
+receiver functions.
+
 If you want to assume all directories within the Stations folder are stations
-that you want to plot, then ruse the following for station_list
+that you want to plot, then use the following for station_list
 
 station_list = next(os.walk(f'{station_dir)}/.)[1]
 """
