@@ -25,8 +25,8 @@ from obspy import read
 
 
 Real_BAZ = True # Plots the more physically representative BAZ plot if true
-False_BAZ = False # Plots the more conceptual BAZ plot if true
-Binned_BAZ = False # Plots the binned BAZ plot if true
+False_BAZ = True # Plots the more conceptual BAZ plot if true
+Binned_BAZ = True # Plots the binned BAZ plot if true
 Show_Figs = True # Displays the figures on screen if true
 Save_Figs = False # Saves the figures made by this script if true
 
@@ -35,7 +35,7 @@ This script expects that traces (RFs) all share a common prefix that allows
 them to be globbed via Prefix_* and that traces are organized into directories
 named after their corresponding station. An example expected data structure:
 
-/home/user/project_RFs/Stations/Station/Event_*
+/home/user/project_RFs/Stations/Station/Event_*.itr
 
 where the Stations directory contains directories named after each station and
 Event_ corresponds to the common prefix for all directories you wish to plot.
@@ -47,10 +47,10 @@ that you want to plot, then ruse the following for station_list
 station_list = next(os.walk(f'{station_dir)}/.)[1]
 """
 station_dir = '/home/tlee/Maule_RFs/Stations'
-trace_pref = 'Event_*'
-station_list = next(os.walk(f'{station_dir}/.'))[1]
+trace_pref = 'Event_*.itr' # Make sure to specify radial RFs only
+station_list = ['W1A']
 
-scale_factor = 12 # Default = 12
+scale_factor = 24 # Default = 12
 starttime = -5 # Time in seconds relative to first peak
 endtime= 25 # Time in seconds relative to first peak
 phase_shift = 30 # Time of first peak
@@ -130,7 +130,6 @@ def Plot_Stations_By_Binned_BAZ(input_stream):
         traces_in_current_bin = []
 
         for i, trace in enumerate(input_stream):
-            trace = input_stream
             backaz = trace.stats.sac.baz
 
             if bin_bottom <= backaz <= bin_top:
