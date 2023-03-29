@@ -24,11 +24,11 @@ import matplotlib.pyplot as plt
 from obspy import read
 from obspy.taup import TauPyModel
 
-Real_RP = False
+Real_RP = True
 Ordered_RP = False
 Binned_RP = True
 Show_Figs = True # Shows figures if True
-Save_Figs = False # Saves the figures made by this script if True
+Save_Figs = True # Saves the figures made by this script if True
 
 """
 This script expects that traces (RFs) all share a common prefix that allows
@@ -62,7 +62,7 @@ scale_factor = 2 # Default = 2
 starttime = -2 # Time in seconds relative to first peak
 endtime= 10 # Time in seconds relative to first peak
 phase_shift = 30 # Time of true P-peak. Should be equal for all RFs
-bins = 10 # Specifies the number of bins for the binned ray parameter plot.
+bins = 20 # Specifies the number of bins for the binned ray parameter plot.
 
 current_dir = os.getcwd()
 starttime = starttime + phase_shift
@@ -129,7 +129,7 @@ def Plot_By_Ray_Parameter(input_stream,input_model ='iasp91'):
     ax.set_ylim(top=starttime,bottom=endtime)
     ax.set_ylabel('Time (seconds)')
     ax.set_xlim(left=min_ray_param,right=max_ray_param)
-    ax.set_xlabel('Ray Parameter')
+    ax.set_xlabel('Ray Parameter (seconds/degrees)')
 
     return fig
 
@@ -234,7 +234,7 @@ def Plot_By_Binned_Ray_Parameter(input_stream, input_model ='iasp91'):
     stack_stream = stream.copy()
     stack_stream.clear()
 
-    binned_rp_scale_factor = scale_factor / bins
+    binned_rp_scale_factor = scale_factor * 2 / bins
     fig = plt.figure(figsize=[8, 4],
                      dpi=800)
     ax = fig.add_subplot(1, 1, 1)
@@ -294,7 +294,7 @@ def Plot_By_Binned_Ray_Parameter(input_stream, input_model ='iasp91'):
         ax.set_ylim(top=starttime,bottom=endtime)
         ax.set_ylabel('Time (seconds)')
         ax.set_xlim(left=xmin,right=xmax)
-        ax.set_xlabel('Ray Parameter')
+        ax.set_xlabel('Ray Parameter (seconds/degrees)')
 
         stack_stream.clear()
         bin_bottom += bin_size
