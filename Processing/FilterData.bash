@@ -59,7 +59,7 @@ for event in `ls -ad ${DirPref}*`; do # Loops through event directories
 			touch $CurFilterFile
 		fi
 
-		echo "r *$CurStat*.[r,t,z]" >> $CurFilterFile
+		echo "r *$CurStat.[r,t,z]" >> $CurFilterFile
 		
 		if [[ $Downsample == "1" ]];
 		then
@@ -87,7 +87,7 @@ for event in `ls -ad ${DirPref}*`; do # Loops through event directories
 			echo "bp co $BotCo $TopCo n $Passes" >> $CurFilterFile
 		fi
 
-		echo "w $CurStat.bp.$BotCo.$TopCo.r $CurStat.bp.$BotCo.$TopCo.t $CurStatbp.$bp.$BotCo.$TopCo.z" >> $CurFilterFile
+		echo "w $CurStat.bp.$BotCo.$TopCo.r $CurStat.bp.$BotCo.$TopCo.t $CurStat.bp.$BotCo.$TopCo.z" >> $CurFilterFile
 		echo "q" >> $CurFilterFile
  
 		#if [ -f "$CurFilterFile" ]; then ##UNCOMMENT IF DEBUGGING
