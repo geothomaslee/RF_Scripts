@@ -87,7 +87,7 @@ for event in `ls -ad ${DirPref}*`; do # Loops through event directories
 			echo "bp co $BotCo $TopCo n $Passes" >> $CurFilterFile
 		fi
 
-		echo "w $CurStat.r $CurStat.t $CurStat.z" >> $CurFilterFile
+		echo "w $CurStat.bp.$BotCo.$TopCo.r $CurStat.bp.$BotCo.$TopCo.t $CurStatbp.$bp.$BotCo.$TopCo.z" >> $CurFilterFile
 		echo "q" >> $CurFilterFile
  
 		#if [ -f "$CurFilterFile" ]; then ##UNCOMMENT IF DEBUGGING
