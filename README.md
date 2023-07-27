@@ -5,4 +5,4 @@ I wrote most of these scripts as an undergraduate while working on a receiver fu
 
 Processing helps make the traces ready for input into Iterdecon. ReceiverFunctions contains scripts for feeding the data into Iterdecon. Post-processing helps organize the data to make it easier to work with, including stacking by station. All of these are done in Bash.
 
-Visualizing contains Python scripts that can help plot receiver functions in various ways to help visualize the data.
+Visualizing contains Python scripts that can plot receiver functions in various ways to help visualize the data.
